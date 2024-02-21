@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Socket.IO chat</title>
+    <style>
+      body { margin: 0; padding-bottom: 3rem; font-family: sans-serif; }
+
+      #form { background: rgba(0, 0, 0, 0.15); padding: 0.25rem; position: fixed; bottom: 0; left: 0; right: 0; display: flex; height: 3rem; box-sizing: border-box; backdrop-filter: blur(10px); }
+      #input { border: none; padding: 0 1rem; flex-grow: 1; border-radius: 2rem; margin: 0.25rem; }
+      #input:focus { outline: none; }
+      #form > button { background: #333; border: none; padding: 0 1rem; margin: 0.25rem; border-radius: 3px; outline: none; color: #fff; }
+
+      #messages { list-style-type: none; margin: 0; padding: 0; }
+      #messages > li { padding: 0.5rem 1rem; }
+      #messages > li:nth-child(odd) { background: #efefef; }
+
+      #status {position: fixed; bottom: 40px; left: 0; right: 0;padding:0 10px;color: #999;}
+    </style>
+  </head>
+  <body>
+    <ul id="messages"></ul>
+    <p id="status"></p>
+    <form id="form" action="">
+      <input id="input" autocomplete="off" /><button>Send</button>
+    </form>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.4/socket.io.min.js" integrity="sha512-skuhu6jj+sQnhLq1Txsack8VfnIrX8wL+MTFilYlFFT/NuLJm7eya7zOROs39Jy5cjASMEWqxLzijRVmKhsqWQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script>        
+        var socket = io('http://localhost:3333');
+
+        const messageList = document.getElementById('messages')
+        const form = document.getElementById('form')
+        const input = document.getElementById('input')
+        const status = document.getElementById('status')
+
+        socket.on('userConnection', function(msg){
+            console.log(msg)
+            item = document.createElement('li')
+            item.textContent = "👨 "+msg
+            messageList.appendChild(item)
+            if (msg==="Usuario se acaba de desconectar") confirm('Usuario se acaba de desconectar')
+        })
+
+        socket.on('message', function(msg){
+            console.log(msg)
+            item = document.createElement('li')
+            item.textContent = "💌 "+msg
+            messageList.appendChild(item)
+        })
+
+        form.addEventListener('submit', function(e){
+            e.preventDefault()
+            if (input.value) {
+                socket.emit("message",input.value)
+            }
+        })
+
+        input.addEventListener('keyup', function(e){
+            console.log('change')
+        })
+
+    </script>
+  </body>
+</html>
